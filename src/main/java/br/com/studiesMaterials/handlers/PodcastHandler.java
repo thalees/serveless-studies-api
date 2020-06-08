@@ -52,7 +52,7 @@ public class PodcastHandler implements PodcastDao{
 
             String sql = String.format(
                     "INSERT INTO public.podcast (student_Id, subject, time, link) " +
-                            "VALUES ('%s', '%s', '%s', '%s')", paramSchema.subject, paramSchema.user_id,
+                            "VALUES ('%s', '%s', '%s', '%s')", paramSchema.subject, paramSchema.student_id,
                                                                paramSchema.time, paramSchema.link
             );
 
@@ -70,7 +70,8 @@ public class PodcastHandler implements PodcastDao{
 
             String sql = String.format(
                     "UPDATE public.podcast SET (student_Id = '%s', subject = '%s', time = '%s', link = '%s') " +
-                            "WHERE (id = '%s')", paramSchema.user_id, paramSchema.subject, paramSchema.time, paramSchema.link, paramSchema.id
+                            "WHERE (id = '%s')", paramSchema.student_id, paramSchema.subject, paramSchema.time,
+                                                                      paramSchema.link, paramSchema.id
             );
 
             statement.executeQuery(sql);
@@ -97,7 +98,6 @@ public class PodcastHandler implements PodcastDao{
 
     private String serializerResponse(List<Podcast> podcasts) {
         Gson gson = new Gson();
-        ObjectMapper mapper = new ObjectMapper();
         return gson.toJson(podcasts);
     }
 }

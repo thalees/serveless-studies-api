@@ -9,7 +9,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PodcastPostSchema {
     public UUID id;
-    public UUID user_id;
+    public UUID student_id;
     public String subject;
     public int time;
     public String link;
