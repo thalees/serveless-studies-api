@@ -43,7 +43,19 @@ public class StudentHandler implements StudentDao {
 
     @Override
     public void create(StudentPostSchema paramSchema) {
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            Statement statement = conn.createStatement();
 
+            String sql = String.format(
+                    "INSERT INTO public.student (username) " +
+                            "VALUES ('%s')", paramSchema.username
+            );
+
+            statement.executeQuery(sql);
+        } catch (SQLException error) {
+            error.printStackTrace();
+        }
     }
 
     private String serializerResponse(List<Student> books) {
