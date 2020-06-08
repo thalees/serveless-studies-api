@@ -52,7 +52,8 @@ public class PodcastHandler implements PodcastDao{
 
             String sql = String.format(
                     "INSERT INTO public.podcast (student_Id, subject, time, link) " +
-                            "VALUES ('%s', '%s', '%s', '%s')", paramSchema.subject, paramSchema.user_id, paramSchema.time, paramSchema.link
+                            "VALUES ('%s', '%s', '%s', '%s')", paramSchema.subject, paramSchema.user_id,
+                                                               paramSchema.time, paramSchema.link
             );
 
             statement.executeQuery(sql);
@@ -62,8 +63,20 @@ public class PodcastHandler implements PodcastDao{
     }
 
     @Override
-    public void update(PodcastPostSchema pramSchema) {
+    public void update(PodcastPostSchema paramSchema) {
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            Statement statement = conn.createStatement();
 
+            String sql = String.format(
+                    "UPDATE public.podcast SET (student_Id = '%s', subject = '%s', time = '%s', link = '%s') " +
+                            "WHERE (id = '%s')", paramSchema.user_id, paramSchema.subject, paramSchema.time, paramSchema.link, paramSchema.id
+            );
+
+            statement.executeQuery(sql);
+        } catch (SQLException error) {
+            error.printStackTrace();
+        }
     }
 
     @Override
