@@ -81,7 +81,18 @@ public class PodcastHandler implements PodcastDao{
 
     @Override
     public void delete(UUID podcastId) {
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            Statement statement = conn.createStatement();
 
+            String sql = String.format(
+                    "DELETE public.podcast WHERE (id = '%s')", podcastId
+            );
+
+            statement.executeQuery(sql);
+        } catch (SQLException error) {
+            error.printStackTrace();
+        }
     }
 
     private String serializerResponse(List<Podcast> podcasts) {
