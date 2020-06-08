@@ -2,7 +2,6 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.PodcastDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.domain.Book;
 import br.com.studiesMaterials.domain.Podcast;
 import br.com.studiesMaterials.web.api.schemas.PodcastPostSchema;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +46,19 @@ public class PodcastHandler implements PodcastDao{
 
     @Override
     public void create(PodcastPostSchema paramSchema) {
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            Statement statement = conn.createStatement();
 
+            String sql = String.format(
+                    "INSERT INTO public.podcast (student_Id, subject, time, link) " +
+                            "VALUES ('%s', '%s', '%s', '%s')", paramSchema.subject, paramSchema.user_id, paramSchema.time, paramSchema.link
+            );
+
+            statement.executeQuery(sql);
+        } catch (SQLException error) {
+            error.printStackTrace();
+        }
     }
 
     @Override
