@@ -1,8 +1,10 @@
 package br.com.studiesMaterials.dao;
 
-import br.com.studiesMaterials.web.api.schemas.StudentPostSchema;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+
 
 public interface StudentDao {
-    String findAll();
-    void create(StudentPostSchema paramSchema);
+    APIGatewayProxyResponseEvent findAll(APIGatewayProxyRequestEvent input);
+    APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent  input);
 }
