@@ -1,9 +1,7 @@
 package br.com.studiesMaterials.domain;
-import lombok.AllArgsConstructor;
 
 import java.util.UUID;
 
-@AllArgsConstructor(staticName = "of")
 public class Book {
     private UUID id;
     private UUID userId;
