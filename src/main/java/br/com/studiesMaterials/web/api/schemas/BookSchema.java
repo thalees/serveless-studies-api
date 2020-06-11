@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BookPostSchema {
+public class BookSchema {
     public String subject;
     public String title;
     public String author;
