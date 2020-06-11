@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface PodcastDao {
     String findAll();
-    APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent paramSchema);
+    APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input);
     void update(PodcastPostSchema pramSchema);
     void delete(UUID podcastId);
 }
