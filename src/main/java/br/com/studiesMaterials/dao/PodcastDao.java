@@ -9,5 +9,5 @@ public interface PodcastDao {
     String findAll();
     APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input);
     APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input);
-    void delete(UUID podcastId);
+    APIGatewayProxyResponseEvent delete(APIGatewayProxyRequestEvent input);
 }

@@ -105,18 +105,25 @@ public class PodcastHandler implements PodcastDao{
     }
 
     @Override
-    public void delete(UUID podcastId) {
+    public APIGatewayProxyResponseEvent delete(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
 
-            String sql = String.format(
-                    "DELETE public.podcast WHERE (id = '%s')", podcastId
-            );
+            String podcastId = input.getPathParameters().get("podcast_id");
+
+            String sql = String.format("DELETE public.podcast WHERE id = '%s'", podcastId);
 
             statement.executeQuery(sql);
+            responseEvent.setStatusCode(204);
+
+            return responseEvent;
         } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return  responseEvent;
         }
     }
 
