@@ -16,36 +16,6 @@ import java.util.UUID;
 public class PodcastHandler implements PodcastDao{
 
     @Override
-    public String findAll() {
-        final List<Podcast> podcasts = new ArrayList<>();
-
-        try(Connection conn = DataBase.connection()) {
-            assert conn != null;
-            Statement statement = conn.createStatement();
-
-            ResultSet rs = statement.executeQuery(
-                    "SELECT * FROM public.podcast"
-            );
-
-            while (rs.next()) {
-                Podcast podcast = new Podcast(
-                        rs.getString("id"),
-                        rs.getString("student_id"),
-                        rs.getString("subject"),
-                        rs.getInt("time"),
-                        rs.getString("link")
-                );
-                podcasts.add(podcast);
-            }
-
-            return serializerResponse(podcasts);
-        } catch (SQLException error) {
-            error.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
     public APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try(Connection conn = DataBase.connection()) {

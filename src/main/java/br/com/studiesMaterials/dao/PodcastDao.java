@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import java.util.UUID;
 
 public interface PodcastDao {
-    String findAll();
     APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input);
     APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input);
     APIGatewayProxyResponseEvent delete(APIGatewayProxyRequestEvent input);
