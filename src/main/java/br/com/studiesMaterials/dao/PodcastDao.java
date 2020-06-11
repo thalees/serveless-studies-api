@@ -8,6 +8,6 @@ import java.util.UUID;
 public interface PodcastDao {
     String findAll();
     APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input);
-    void update(PodcastPostSchema pramSchema);
+    APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input);
     void delete(UUID podcastId);
 }

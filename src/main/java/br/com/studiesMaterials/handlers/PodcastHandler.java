@@ -75,20 +75,32 @@ public class PodcastHandler implements PodcastDao{
     }
 
     @Override
-    public void update(PodcastPostSchema paramSchema) {
+    public APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
 
+            String podcastId = input.getPathParameters().get("podcast_id");
+            PodcastPostSchema data = convertBody(input.getBody());
+
             String sql = String.format(
-                    "UPDATE public.podcast SET (student_Id = '%s', subject = '%s', time = '%s', link = '%s') " +
-                            "WHERE (id = '%s')", paramSchema.student_id, paramSchema.subject, paramSchema.time,
-                                                                      paramSchema.link, paramSchema.id
+                    "UPDATE public.podcast SET student_Id = '%s', subject = '%s', time = '%s', link = '%s' " +
+                            "WHERE id = '%s'", data.student_id, data.subject, data.time,
+                    data.link, podcastId
             );
 
             statement.executeQuery(sql);
+            conn.close();
+
+            responseEvent.setStatusCode(201);
+
+            return responseEvent;
         } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
         }
     }
 
