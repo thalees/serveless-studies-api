@@ -2,16 +2,13 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.PodcastDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.domain.Podcast;
-import br.com.studiesMaterials.web.api.schemas.PodcastPostSchema;
+import br.com.studiesMaterials.web.api.schemas.PodcastSchema;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class PodcastHandler implements PodcastDao{
 
@@ -24,7 +21,7 @@ public class PodcastHandler implements PodcastDao{
 
             String studentId =  input.getPathParameters().get("student_id");
 
-            PodcastPostSchema data = convertBody(input.getBody());
+            PodcastSchema data = convertBody(input.getBody());
 
             String sql = String.format(
                     "INSERT INTO public.podcast (student_Id, subject, time, link) " +
@@ -52,7 +49,7 @@ public class PodcastHandler implements PodcastDao{
             Statement statement = conn.createStatement();
 
             String podcastId = input.getPathParameters().get("podcast_id");
-            PodcastPostSchema data = convertBody(input.getBody());
+            PodcastSchema data = convertBody(input.getBody());
 
             String sql = String.format(
                     "UPDATE public.podcast SET student_Id = '%s', subject = '%s', time = '%s', link = '%s' " +
@@ -97,13 +94,8 @@ public class PodcastHandler implements PodcastDao{
         }
     }
 
-    private PodcastPostSchema convertBody(String json) {
+    private PodcastSchema convertBody(String json) {
         Gson gson = new Gson();
-        return gson.fromJson(json, PodcastPostSchema.class);
-    }
-
-    private String serializerResponse(List<Podcast> podcasts) {
-        Gson gson = new Gson();
-        return gson.toJson(podcasts);
+        return gson.fromJson(json, PodcastSchema.class);
     }
 }

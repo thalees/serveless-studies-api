@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class PodcastPostSchema {
+public class PodcastSchema {
     public UUID id;
     public UUID student_id;
     public String subject;
