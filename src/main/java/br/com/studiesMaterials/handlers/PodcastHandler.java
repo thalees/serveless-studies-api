@@ -8,7 +8,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.google.gson.Gson;
 
 import java.sql.*;
-import java.util.List;
 
 public class PodcastHandler implements PodcastDao{
 
@@ -25,11 +24,11 @@ public class PodcastHandler implements PodcastDao{
 
             String sql = String.format(
                     "INSERT INTO public.podcast (student_Id, subject, time, link) " +
-                            "VALUES ('%s', '%s', '%s', '%s')", studentId, data.subject,
-                                                               data.time, data.link
+                    "VALUES ('%s', '%s', '%s', '%s')", studentId, data.subject, data.time, data.link
             );
 
             statement.executeQuery(sql);
+
             responseEvent.setStatusCode(201);
 
             return responseEvent;
@@ -52,9 +51,8 @@ public class PodcastHandler implements PodcastDao{
             PodcastSchema data = convertBody(input.getBody());
 
             String sql = String.format(
-                    "UPDATE public.podcast SET student_Id = '%s', subject = '%s', time = '%s', link = '%s' " +
-                            "WHERE id = '%s'", data.student_id, data.subject, data.time,
-                    data.link, podcastId
+                    "UPDATE public.podcast SET subject = '%s', time = '%s', link = '%s' " +
+                    "WHERE id = '%s'", data.subject, data.time, data.link, podcastId
             );
 
             statement.executeQuery(sql);

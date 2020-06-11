@@ -11,10 +11,10 @@ public class PodcastResponse {
     public String time;
     public String link;
 
-    public PodcastResponse(String id, String subject, String title, String time, String link) {
+    public PodcastResponse(String id, String subject, String time, String link) {
         this.id = id;
         this.subject = subject;
-        this.time = title;
+        this.time = time;
         this.link = link;
     }
 }
