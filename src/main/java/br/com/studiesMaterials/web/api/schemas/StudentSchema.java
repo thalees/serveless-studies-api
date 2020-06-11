@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StudentPostSchema {
+public class StudentSchema {
     public String username;
 }
