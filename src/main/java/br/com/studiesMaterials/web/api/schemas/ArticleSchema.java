@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CoursePutSchema {
-    public String name;
-    public String platform;
-    public Float price;
+public class ArticleSchema {
+    public String subject;
+    public String link;
 }

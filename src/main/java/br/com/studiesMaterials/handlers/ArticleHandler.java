@@ -2,103 +2,100 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.ArticleDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.domain.Article;
-import br.com.studiesMaterials.web.api.schemas.ArticlePostSchema;
-import br.com.studiesMaterials.web.api.schemas.ArticlePutSchema;
+import br.com.studiesMaterials.web.api.schemas.ArticleSchema;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
-
-import javax.xml.crypto.Data;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.sql.*;
 
 public class ArticleHandler implements ArticleDao {
     @Override
-    public String findAll() {
-        final List<Article> articles = new ArrayList<>();
-
-        try(Connection conn = DataBase.connection()){
-            assert conn != null;
-
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery(
-                    "SELECT * FROM public.article"
-            );
-
-            while(rs.next()){
-                Article article = new Article(
-                        rs.getString("id"),
-                        rs.getString("student_id"),
-                        rs.getString("subject"),
-                        rs.getString("link")
-                );
-                articles.add(article);
-            }
-            return serializerResponse(articles);
-        } catch (SQLException error){
-            error.printStackTrace();
-        }
-        return null;
-    }
-
-    public void create(ArticlePostSchema data) {
+    public APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
 
+            String studentId =  input.getPathParameters().get("student_id");
+
+            ArticleSchema data = convertBody(input.getBody());
+
             String sql = String.format(
-                    "INSERT INTO public.article (subject, link) " +
-                            "VALUES ('%s', '%s')", data.subject, data.link
+                    "INSERT INTO public.article (student_id, subject, link) " +
+                            "VALUES ('%s', '%s', '%s')", studentId, data.subject, data.link
             );
 
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
+
+            responseEvent.setStatusCode(201);
+
+            return responseEvent;
         } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
         }
     }
 
-    public void update(ArticlePutSchema data, UUID id){
-        try(Connection conn = DataBase.connection()){
+    @Override
+    public APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
-            String sql = String.format("UPDATE public.course SET ");
 
-            if(data.subject!=null)
-                sql.concat("subject=" + data.subject);
-            if(data.link!=null)
-                sql.concat("link=" + data.link);
+            String articleId = input.getPathParameters().get("article_id");
 
-            sql.concat(" WHERE id = " + id);
-
-            statement.executeQuery(sql);
-        }
-        catch (SQLException error){
-            error.printStackTrace();
-        }
-    }
-
-    public void delete(UUID id){
-        try(Connection conn = DataBase.connection()){
-            assert conn != null;
-            Statement statement = conn.createStatement();
+            ArticleSchema data = convertBody(input.getBody());
 
             String sql = String.format(
-                    "DELETE FROM public.article" +
-                            "WHERE id = %s", id);
+                    "UPDATE public.article SET subject = '%s', link = '%s' " +
+                            "WHERE id = '%s'", data.subject, data.link, articleId
+            );
 
-            statement.executeQuery(sql);
-        }
-        catch (SQLException error){
+            statement.executeUpdate(sql);
+            conn.close();
+
+            responseEvent.setStatusCode(201);
+
+            return responseEvent;
+        } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
         }
     }
 
-    private String serializerResponse(List<Article> articles) {
+    @Override
+    public APIGatewayProxyResponseEvent delete(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            Statement statement = conn.createStatement();
+            String articleId = input.getPathParameters().get("article_id");
+
+            String sql = String.format("DELETE FROM public.article WHERE id = '%s'", articleId);
+
+            statement.executeUpdate(sql);
+
+            responseEvent.setStatusCode(204);
+
+            return responseEvent;
+        } catch (SQLException error) {
+            error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            String body = String.format("{ 'message': %s}", error.getMessage());
+            responseEvent.setBody(body);
+
+            return responseEvent;
+        }
+    }
+
+    private ArticleSchema convertBody(String json){
         Gson gson = new Gson();
-        return gson.toJson(articles);
+        return gson.fromJson(json, ArticleSchema.class);
     }
 }

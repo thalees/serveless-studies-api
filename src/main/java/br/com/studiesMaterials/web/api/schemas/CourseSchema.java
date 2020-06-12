@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CoursePostSchema {
+public class CourseSchema {
     public String name;
     public String platform;
     public Float price;

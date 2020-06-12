@@ -2,106 +2,102 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.CourseDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.domain.Course;
-import br.com.studiesMaterials.web.api.schemas.CoursePostSchema;
-import br.com.studiesMaterials.web.api.schemas.CoursePutSchema;
+import br.com.studiesMaterials.web.api.schemas.CourseSchema;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
 
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+
 
 public class CourseHandler implements CourseDao {
     @Override
-    public String FindAll() {
-        final List<Course> courses = new ArrayList<>();
-
-        try(Connection conn = DataBase.connection()){
+    public APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
 
-            ResultSet rs = statement.executeQuery(
-                    "SELECT * FROM public.course"
+            String studentId =  input.getPathParameters().get("student_id");
+
+            CourseSchema data = convertBody(input.getBody());
+
+            String sql = String.format(
+                    "INSERT INTO public.course (student_id, name, platform, price) " +
+                            "VALUES ('%s', '%s', '%s', '%s')", studentId, data.name, data.platform, data.price
             );
 
-            while(rs.next()){
-                Course course = new Course(
-                        rs.getString("id"),
-                        rs.getString("student_id"),
-                        rs.getString("name"),
-                        rs.getString("platform"),
-                        rs.getString("price")
-                );
-                courses.add(course);
-            }
+            statement.executeUpdate(sql);
 
-            return serializerResponse(courses);
+            responseEvent.setStatusCode(201);
 
-        } catch (SQLException error){
+            return responseEvent;
+        } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
         }
-        return null;
     }
 
-    public void create(CoursePostSchema data){
-        try(Connection conn = DataBase.connection()){
+    @Override
+    public APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
+
+            String courseId = input.getPathParameters().get("course_id");
+
+            CourseSchema data = convertBody(input.getBody());
 
             String sql = String.format(
-                    "INSERT INTO public.course (name, platform, price)" +
-                            "VALUES ('%s','%s','%f')", data.name,data.platform,data.price);
+                    "UPDATE public.course SET name = '%s', platform = '%s', price = '%s'" +
+                            "WHERE id = '%s'", data.name, data.platform, data.price, courseId
+            );
 
-            statement.executeQuery(sql);
-        }
-        catch (SQLException error){
+            statement.executeUpdate(sql);
+            conn.close();
+
+            responseEvent.setStatusCode(201);
+
+            return responseEvent;
+        } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
         }
     }
 
-    public void update(CoursePutSchema data, UUID id){
-        try(Connection conn = DataBase.connection()){
+    @Override
+    public APIGatewayProxyResponseEvent delete(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        try(Connection conn = DataBase.connection()) {
             assert conn != null;
             Statement statement = conn.createStatement();
-            String sql = String.format("UPDATE public.course SET ");
+            String courseId = input.getPathParameters().get("course_id");
 
-            if(data.name!=null)
-                sql.concat("name=" + data.name);
-            if(data.platform!=null)
-                sql.concat("platform=" + data.platform);
-            if(data.price!=null)
-                sql.concat("price=" + data.price);
+            String sql = String.format("DELETE FROM public.course WHERE id = '%s'", courseId);
 
-            sql.concat(" WHERE id = " + id);
+            statement.executeUpdate(sql);
 
-            statement.executeQuery(sql);
-        }
-        catch (SQLException error){
+            responseEvent.setStatusCode(204);
+
+            return responseEvent;
+        } catch (SQLException error) {
             error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            String body = String.format("{ 'message': %s}", error.getMessage());
+            responseEvent.setBody(body);
+
+            return responseEvent;
         }
     }
 
-    public void delete(UUID id){
-        try(Connection conn = DataBase.connection()){
-            assert conn != null;
-            Statement statement = conn.createStatement();
-
-            String sql = String.format(
-                    "DELETE FROM public.course" +
-                            "WHERE id = %s", id);
-
-            statement.executeQuery(sql);
-        }
-        catch (SQLException error){
-            error.printStackTrace();
-        }
-    }
-
-    private String serializerResponse(List<Course> courses) {
+    private CourseSchema convertBody(String json){
         Gson gson = new Gson();
-        return gson.toJson(courses);
+        return gson.fromJson(json, CourseSchema.class);
     }
-
 }
