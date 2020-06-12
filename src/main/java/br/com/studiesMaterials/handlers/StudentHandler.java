@@ -2,14 +2,12 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.StudentDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.domain.Student;
 import br.com.studiesMaterials.web.api.schemas.BookResponse;
 import br.com.studiesMaterials.web.api.schemas.StudentResponse;
 import br.com.studiesMaterials.web.api.schemas.StudentSchema;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
-import com.sun.tools.javac.Main;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
