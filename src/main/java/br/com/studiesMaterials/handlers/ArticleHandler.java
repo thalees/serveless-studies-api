@@ -26,6 +26,7 @@ public class ArticleHandler implements ArticleDao {
             );
 
             statement.executeUpdate(sql);
+            conn.close();
 
             responseEvent.setStatusCode(201);
 
@@ -79,16 +80,13 @@ public class ArticleHandler implements ArticleDao {
             String sql = String.format("DELETE FROM public.article WHERE id = '%s'", articleId);
 
             statement.executeUpdate(sql);
-
+            conn.close();
             responseEvent.setStatusCode(204);
 
             return responseEvent;
         } catch (SQLException error) {
             error.printStackTrace();
             responseEvent.setStatusCode(500);
-
-            String body = String.format("{ 'message': %s}", error.getMessage());
-            responseEvent.setBody(body);
 
             return responseEvent;
         }

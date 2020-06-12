@@ -1,17 +1,16 @@
 package br.com.studiesMaterials.web.api.schemas;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.UUID;
 
-@Data
-@AllArgsConstructor
 public class ArticleResponse {
-    public String id;
-    public String subject;
-    public String link;
+    private UUID id;
+    private UUID studentId;
+    private String subject;
+    private String link;
 
-    public ArticleResponse(String id, String subject, String link){
-        this.id = id;
+    public ArticleResponse(String id, String studentId, String subject, String link) {
+        this.id = UUID.fromString(id);
+        this.studentId = UUID.fromString(studentId);
         this.subject = subject;
         this.link = link;
     }

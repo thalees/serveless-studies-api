@@ -28,7 +28,7 @@ public class CourseHandler implements CourseDao {
             );
 
             statement.executeUpdate(sql);
-
+            conn.close();
             responseEvent.setStatusCode(201);
 
             return responseEvent;
@@ -52,7 +52,7 @@ public class CourseHandler implements CourseDao {
             CourseSchema data = convertBody(input.getBody());
 
             String sql = String.format(
-                    "UPDATE public.course SET name = '%s', platform = '%s', price = '%s'" +
+                    "UPDATE public.course SET name = '%s', platform = '%s', price = '%s' " +
                             "WHERE id = '%s'", data.name, data.platform, data.price, courseId
             );
 
@@ -81,16 +81,13 @@ public class CourseHandler implements CourseDao {
             String sql = String.format("DELETE FROM public.course WHERE id = '%s'", courseId);
 
             statement.executeUpdate(sql);
-
+            conn.close();
             responseEvent.setStatusCode(204);
 
             return responseEvent;
         } catch (SQLException error) {
             error.printStackTrace();
             responseEvent.setStatusCode(500);
-
-            String body = String.format("{ 'message': %s}", error.getMessage());
-            responseEvent.setBody(body);
 
             return responseEvent;
         }
