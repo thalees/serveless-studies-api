@@ -2,6 +2,7 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.StudentDao;
 import br.com.studiesMaterials.db.DataBase;
+import br.com.studiesMaterials.web.api.responses.*;
 import br.com.studiesMaterials.web.api.schemas.*;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -31,7 +32,7 @@ public class StudentHandler implements StudentDao {
             while (result.next()) {
                 StudentResponse student = new StudentResponse(
                         result.getString("id"),
-                        result.getString("subject")
+                        result.getString("username")
                 );
                 students.add(student);
             }
@@ -101,7 +102,7 @@ public class StudentHandler implements StudentDao {
                 PodcastResponse podcast = new PodcastResponse(
                         result.getString("id"),
                         result.getString("subject"),
-                        result.getString("time"),
+                        result.getInt("time"),
                         result.getString("link")
                 );
                 podcasts.add(podcast);
@@ -138,7 +139,7 @@ public class StudentHandler implements StudentDao {
                         result.getString("id"),
                         result.getString("name"),
                         result.getString("platform"),
-                        result.getString("price")
+                        result.getFloat("price")
                 );
                 courses.add(course);
             }
@@ -203,7 +204,8 @@ public class StudentHandler implements StudentDao {
                     "INSERT INTO public.student (username) " +
                             "VALUES ('%s')", data.username
             );
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
+            conn.close();
 
             responseEvent.setStatusCode(201);
 
@@ -214,7 +216,7 @@ public class StudentHandler implements StudentDao {
         return responseEvent;
     }
 
-   private static String serializerResponse(Object object) {
+    private String serializerResponse(Object object) {
         Gson gson = new Gson();
         return gson.toJson(object);
     }
@@ -223,5 +225,4 @@ public class StudentHandler implements StudentDao {
         Gson gson = new Gson();
         return gson.fromJson(json, StudentSchema.class);
     }
-
 }

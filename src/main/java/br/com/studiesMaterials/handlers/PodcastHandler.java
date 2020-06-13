@@ -27,7 +27,8 @@ public class PodcastHandler implements PodcastDao{
                     "VALUES ('%s', '%s', '%s', '%s')", studentId, data.subject, data.time, data.link
             );
 
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
+            conn.close();
 
             responseEvent.setStatusCode(201);
 
@@ -55,7 +56,7 @@ public class PodcastHandler implements PodcastDao{
                     "WHERE id = '%s'", data.subject, data.time, data.link, podcastId
             );
 
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
             conn.close();
 
             responseEvent.setStatusCode(201);
@@ -78,9 +79,11 @@ public class PodcastHandler implements PodcastDao{
 
             String podcastId = input.getPathParameters().get("podcast_id");
 
-            String sql = String.format("DELETE public.podcast WHERE id = '%s'", podcastId);
+            String sql = String.format("DELETE FROM public.podcast WHERE id = '%s'", podcastId);
 
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
+            conn.close();
+
             responseEvent.setStatusCode(204);
 
             return responseEvent;
@@ -88,7 +91,7 @@ public class PodcastHandler implements PodcastDao{
             error.printStackTrace();
             responseEvent.setStatusCode(500);
 
-            return  responseEvent;
+            return responseEvent;
         }
     }
 

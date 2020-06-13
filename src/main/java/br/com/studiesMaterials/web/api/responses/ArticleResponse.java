@@ -1,11 +1,11 @@
-package br.com.studiesMaterials.web.api.schemas;
+package br.com.studiesMaterials.web.api.responses;
 
 import java.util.UUID;
 
 public class ArticleResponse {
-    private UUID id;
-    private String subject;
-    private String link;
+    UUID id;
+    String subject;
+    String link;
 
     public ArticleResponse(String id, String subject, String link) {
         this.id = UUID.fromString(id);
