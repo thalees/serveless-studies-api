@@ -18,7 +18,7 @@ import java.util.List;
 
 public class StudentHandler implements StudentDao {
     @Override
-    public APIGatewayProxyResponseEvent findAllStudents(APIGatewayProxyRequestEvent input) {
+    public APIGatewayProxyResponseEvent findAll(APIGatewayProxyRequestEvent input) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         final List<StudentResponse> students = new ArrayList<>();
 
