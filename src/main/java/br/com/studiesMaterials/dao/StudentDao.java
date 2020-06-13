@@ -9,5 +9,6 @@ public interface StudentDao {
     APIGatewayProxyResponseEvent findAllBooks(APIGatewayProxyRequestEvent  input);
     APIGatewayProxyResponseEvent findAllPodcasts(APIGatewayProxyRequestEvent  input);
     APIGatewayProxyResponseEvent findAllCourses(APIGatewayProxyRequestEvent  input);
+    APIGatewayProxyResponseEvent findAllArticles(APIGatewayProxyRequestEvent  input);
     APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent  input);
 }

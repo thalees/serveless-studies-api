@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public class CourseResponse {
     private UUID id;
-    private UUID studentId;
     private String name;
     private String platform;
     private Float price;

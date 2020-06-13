@@ -156,6 +156,41 @@ public class StudentHandler implements StudentDao {
     }
 
     @Override
+    public APIGatewayProxyResponseEvent findAllArticles(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        final List<ArticleResponse> articles = new ArrayList<>();
+
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            String studentId =  input.getPathParameters().get("student_id");
+
+            Statement statement = conn.createStatement();
+            String sql = String.format("SELECT * FROM public.article WHERE student_id = '%s'", studentId);
+            ResultSet result = statement.executeQuery(sql);
+            conn.close();
+
+            while (result.next()) {
+                ArticleResponse article = new ArticleResponse(
+                        result.getString("id"),
+                        result.getString("subject"),
+                        result.getString("link")
+                );
+                articles.add(article);
+            }
+
+            responseEvent.setStatusCode(200);
+            responseEvent.setBody(serializerResponse(articles));
+
+            return responseEvent;
+        } catch (SQLException error) {
+            error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
+        }
+    }
+
+    @Override
     public APIGatewayProxyResponseEvent create(APIGatewayProxyRequestEvent input) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try(Connection conn = DataBase.connection()) {
