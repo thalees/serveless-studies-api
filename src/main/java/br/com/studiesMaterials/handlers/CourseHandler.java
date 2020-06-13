@@ -29,6 +29,7 @@ public class CourseHandler implements CourseDao {
 
             statement.executeUpdate(sql);
             conn.close();
+
             responseEvent.setStatusCode(201);
 
             return responseEvent;
