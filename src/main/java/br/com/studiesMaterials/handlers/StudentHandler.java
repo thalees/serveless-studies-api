@@ -2,10 +2,7 @@ package br.com.studiesMaterials.handlers;
 
 import br.com.studiesMaterials.dao.StudentDao;
 import br.com.studiesMaterials.db.DataBase;
-import br.com.studiesMaterials.web.api.schemas.BookResponse;
-import br.com.studiesMaterials.web.api.schemas.PodcastResponse;
-import br.com.studiesMaterials.web.api.schemas.StudentResponse;
-import br.com.studiesMaterials.web.api.schemas.StudentSchema;
+import br.com.studiesMaterials.web.api.schemas.*;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
@@ -112,6 +109,42 @@ public class StudentHandler implements StudentDao {
 
             responseEvent.setStatusCode(200);
             responseEvent.setBody(serializerResponse(podcasts));
+
+            return responseEvent;
+        } catch (SQLException error) {
+            error.printStackTrace();
+            responseEvent.setStatusCode(500);
+
+            return responseEvent;
+        }
+    }
+
+    @Override
+    public APIGatewayProxyResponseEvent findAllCourses(APIGatewayProxyRequestEvent input) {
+        APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        final List<CourseResponse> courses = new ArrayList<>();
+
+        try(Connection conn = DataBase.connection()) {
+            assert conn != null;
+            String studentId =  input.getPathParameters().get("student_id");
+
+            Statement statement = conn.createStatement();
+            String sql = String.format("SELECT * FROM public.course WHERE student_id = '%s'", studentId);
+            ResultSet result = statement.executeQuery(sql);
+            conn.close();
+
+            while (result.next()) {
+                CourseResponse course = new CourseResponse(
+                        result.getString("id"),
+                        result.getString("name"),
+                        result.getString("platform"),
+                        result.getString("price")
+                );
+                courses.add(course);
+            }
+
+            responseEvent.setStatusCode(200);
+            responseEvent.setBody(serializerResponse(courses));
 
             return responseEvent;
         } catch (SQLException error) {
