@@ -48,7 +48,7 @@ Amazon Relational Database Service (Amazon RDS) is a web service that facilitate
 
 ## Authors
 
-See the list of [Contributors](https://github.com/thalees/tacocat-app/contributors) who participated in this project.
+See the list of [Contributors](https://github.com/thalees/serveless-studies-api/graphs/contributors) who participated in this project.
 
 ## License
 
